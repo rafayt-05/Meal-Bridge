@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>MealBridge — Rescue food. Feed people.</title>
+  <meta name="description" content="MealBridge connects restaurants, caterers and households with verified NGOs nearby so surplus food becomes someone's next meal — not landfill." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8D%9E%3C/text%3E%3C/svg%3E" />
+</head>
+<body>
+  <!-- ===== Top nav ===== -->
+  <header class="nav">
+    <div class="brand" data-go="landing" role="button" tabindex="0">
+      <div class="logo">🍞</div>
+      <span>MealBridge<small>Surplus → Service</small></span>
+    </div>
+    <button class="nav-toggle" id="navToggle" aria-label="Menu">☰</button>
+    <nav class="nav-links" id="navLinks">
+      <button data-go="landing">Home</button>
+      <button data-go="about">About</button>
+      <button data-go="faq">FAQ</button>
+      <!-- Logged-out actions -->
+      <button data-go="login" class="anon">Log in</button>
+      <button data-go="register" class="anon cta">Get Started</button>
+      <!-- Logged-in actions -->
+      <button data-go="dashboard" class="auth donor-only" hidden>Dashboard</button>
+      <button data-go="receiver" class="auth ngo-only" hidden>NGO Inbox</button>
+      <button id="profileBtn" class="auth" hidden>👤 <span id="profileName">Me</span></button>
+      <button id="logoutBtn" class="auth ghost" hidden>Log out</button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- ===== Landing ===== -->
+    <section id="landing" class="view active">
+      <div class="hero">
+        <div class="hero-grid">
+          <div>
+            <span class="eyebrow">🌱 Zero-waste food network</span>
+            <h1>Surplus food, <span class="grad">rescued in minutes.</span></h1>
+            <p class="lead">
+              MealBridge is the third-party platform that connects restaurants, caterers, grocers
+              and households with verified NGOs nearby. When you have leftovers, we route them to
+              the closest NGO that can collect and distribute — fast, free, and tracked on a live map.
+            </p>
+            <div class="hero-actions">
+              <button class="btn lg" data-go="register">Donate Surplus Food →</button>
+              <button class="btn lg ghost" data-go="register" data-role="ngo">I'm an NGO</button>
+            </div>
+            <div class="hero-stats">
+              <div><strong>1.3B</strong><span>tons of food wasted every year</span></div>
+              <div><strong>820M</strong><span>people going hungry today</span></div>
+              <div><strong>~30 min</strong><span>typical pickup turnaround</span></div>
+            </div>
+          </div>
+          <div class="hero-visual">
+            <div class="fc-mini">
+              <div class="ring r2">
+                <div class="ring">
+                  <div class="core">🍱</div>
+                </div>
+              </div>
+            </div>
+            <div class="float-card fc-1">
+              <div class="ic">🍞</div>
+              <div><strong>15 trays of biryani</strong><span>posted 2 min ago</span></div>
+            </div>
+            <div class="float-card fc-2 warm">
+              <div class="ic">🚚</div>
+              <div><strong>NGO en route</strong><span>2.4 km away</span></div>
+            </div>
+            <div class="float-card fc-3">
+              <div class="ic">✓</div>
+              <div><strong>42 meals delivered</strong><span>today, near you</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>How MealBridge works</h2>
+        <p class="sub">Three steps — donors post, NGOs claim, food reaches people in need before it spoils.</p>
+        <div class="cards-3">
+          <div class="feature">
+            <div class="step-num">1</div>
+            <h3>Donors post surplus</h3>
+            <p>Restaurants, caterers and households list what's available — quantity, pickup window, photo and exact location pinned on a map.</p>
+          </div>
+          <div class="feature alt">
+            <div class="step-num">2</div>
+            <h3>Nearby NGOs see it instantly</h3>
+            <p>Verified NGOs in the area see the offer on a live map with distance from their base. They pick the ones that fit their route and capacity.</p>
+          </div>
+          <div class="feature">
+            <div class="step-num">3</div>
+            <h3>Food reaches people</h3>
+            <p>The NGO collects from the donor and distributes to shelters, community kitchens or directly to people in need. Tracked end-to-end.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="cta-strip">
+          <h2>Ready to turn surplus into service?</h2>
+          <p>It takes 60 seconds to create an account. No paperwork. No fees.</p>
+          <div class="hero-actions" style="justify-content:center">
+            <button class="btn lg" data-go="register">Create free account</button>
+            <button class="btn lg ghost" data-go="faq">Read FAQ</button>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        MealBridge — built as a not-for-profit prototype to reduce food waste. © <span id="year"></span>
+      </footer>
+    </section>
+
+    <!-- ===== Login ===== -->
+    <section id="login" class="view">
+      <div class="auth-shell">
+        <div class="auth-card">
+          <h2>Welcome back</h2>
+          <p class="sub">Log in to post surplus or pick up offers as an NGO.</p>
+          <form id="loginForm">
+            <label>Email
+              <input type="email" id="loginEmail" required autocomplete="email" placeholder="you@example.com" />
+            </label>
+            <label>Password
+              <input type="password" id="loginPass" required autocomplete="current-password" placeholder="••••••••" />
+            </label>
+            <button class="btn block" type="submit">Log in</button>
+          </form>
+          <div class="divider">or</div>
+          <button class="btn block ghost" id="demoDonor">Try as Demo Donor</button>
+          <button class="btn block ghost" id="demoNgo" style="margin-top:8px">Try as Demo NGO</button>
+          <div class="auth-foot">
+            New here? <button class="link" data-go="register">Create an account</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Register ===== -->
+    <section id="register" class="view">
+      <div class="auth-shell">
+        <div class="auth-card wide">
+          <h2>Create your account</h2>
+          <p class="sub">Choose your role and pin your location — that's how we match donors and NGOs.</p>
+
+          <div class="role-switch">
+            <label><input type="radio" name="regRole" value="donor" checked /><span>🍱 I'm a Donor</span></label>
+            <label><input type="radio" name="regRole" value="ngo" /><span>🤝 I'm an NGO</span></label>
+          </div>
+
+          <form id="registerForm">
+            <div class="auth-grid">
+              <div>
+                <label>Full name <span class="req">*</span>
+                  <input type="text" id="regName" required placeholder="e.g. Aliya's Kitchen" />
+                </label>
+                <label>Email <span class="req">*</span>
+                  <input type="email" id="regEmail" required autocomplete="email" placeholder="you@example.com" />
+                </label>
+                <label>Password <span class="req">*</span>
+                  <input type="password" id="regPass" required minlength="6" autocomplete="new-password" placeholder="At least 6 characters" />
+                </label>
+                <label>Phone
+                  <input type="tel" id="regPhone" placeholder="+92 300 1234567" />
+                </label>
+                <label>Address
+                  <input type="text" id="regAddress" placeholder="Street, area, city" />
+                </label>
+              </div>
+              <div>
+                <label style="margin-bottom:6px">Pin your location on the map <span class="req">*</span></label>
+                <div class="panel map-panel map-wrap" style="margin:0">
+                  <div id="regMap" class="map" style="height:300px"></div>
+                  <div class="map-help">
+                    <span>📍</span>
+                    <span>Click the map to drop a pin, or</span>
+                    <button type="button" class="btn ghost" id="regUseMyLoc" style="padding:4px 10px;font-size:12px">Use my GPS</button>
+                  </div>
+                </div>
+                <div class="small" style="color:var(--muted);font-size:12px;margin-top:8px" id="regCoords">
+                  No location set yet — click the map.
+                </div>
+              </div>
+            </div>
+            <button class="btn block lg" type="submit" style="margin-top:18px">Create account</button>
+          </form>
+          <div class="auth-foot">
+            Already have an account? <button class="link" data-go="login">Log in</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Donor Dashboard ===== -->
+    <section id="dashboard" class="view">
+      <div class="dash-header">
+        <div>
+          <h2>Donor Dashboard</h2>
+          <div class="sub">Post surplus food, manage your offers, see which NGO claimed each one.</div>
+        </div>
+        <button class="btn" id="dashRefresh">↻ Refresh</button>
+      </div>
+
+      <div class="metrics">
+        <div class="metric"><div class="ic">📦</div><strong id="dMTotal">0</strong><span>Total offers posted</span></div>
+        <div class="metric warm"><div class="ic">🕓</div><strong id="dMOpen">0</strong><span>Currently open</span></div>
+        <div class="metric info"><div class="ic">🤝</div><strong id="dMAccepted">0</strong><span>Accepted by NGOs</span></div>
+        <div class="metric warn"><div class="ic">✓</div><strong id="dMCollected">0</strong><span>Collected</span></div>
+      </div>
+
+      <div class="dash-grid">
+        <div class="panel map-panel">
+          <div id="donorMap" class="map"></div>
+          <div class="map-help">
+            <span>📍</span>
+            <span>Click anywhere on the map to choose the pickup location for a new offer.</span>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3>Post a new offer</h3>
+          <form id="offerForm">
+            <label>Item name <span class="req">*</span>
+              <input type="text" id="itemName" required maxlength="100" placeholder="e.g. Cooked rice, fresh bread, sealed packs…" />
+            </label>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+              <label>Portions <span class="req">*</span>
+                <input type="number" id="quantity" required min="1" value="1" />
+              </label>
+              <label>Category
+                <select id="category">
+                  <option value="cooked">Cooked meal</option>
+                  <option value="raw">Raw ingredients</option>
+                  <option value="bakery">Bakery</option>
+                  <option value="produce">Produce</option>
+                  <option value="packaged">Packaged / sealed</option>
+                </select>
+              </label>
+            </div>
+            <label>Pickup instructions
+              <textarea id="pickup" maxlength="240" placeholder="e.g. Side door, ask for manager. Available 6–9 pm."></textarea>
+            </label>
+            <label>Best before
+              <input type="datetime-local" id="expiry" />
+            </label>
+            <label>Photo URL (optional)
+              <input type="url" id="photo" placeholder="https://…" />
+            </label>
+            <div id="offerCoords" class="small" style="color:var(--muted);font-size:12px;margin:-6px 0 12px">
+              📍 Pickup location not set — click the map.
+            </div>
+            <button class="btn block" type="submit">Post offer</button>
+          </form>
+        </div>
+      </div>
+
+      <div class="dash-grid" style="margin-top:6px">
+        <div class="panel">
+          <h3>Your offers <span class="pill" id="myOffersCount">0</span></h3>
+          <div id="myOffers"></div>
+        </div>
+        <div class="panel">
+          <h3>Closest NGOs to your location <span class="pill">distance</span></h3>
+          <div id="closeNgos"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== NGO / Receiver Dashboard ===== -->
+    <section id="receiver" class="view">
+      <div class="dash-header">
+        <div>
+          <h2>NGO Inbox</h2>
+          <div class="sub">Browse fresh donations near you, claim what fits your route, mark collected when done.</div>
+        </div>
+        <button class="btn" id="receiverRefresh">↻ Refresh</button>
+      </div>
+
+      <div class="metrics">
+        <div class="metric"><div class="ic">📥</div><strong id="rMOpen">0</strong><span>Open near you</span></div>
+        <div class="metric info"><div class="ic">🤝</div><strong id="rMMine">0</strong><span>You've claimed</span></div>
+        <div class="metric warn"><div class="ic">✓</div><strong id="rMDone">0</strong><span>Collected</span></div>
+        <div class="metric warm"><div class="ic">🍱</div><strong id="rMPortions">0</strong><span>Total portions</span></div>
+      </div>
+
+      <div class="dash-grid">
+        <div class="panel map-panel">
+          <div id="ngoMap" class="map"></div>
+          <div class="map-help">
+            <span>🗺</span>
+            <span>Green pins are open donations. Click any pin to see details and accept.</span>
+          </div>
+        </div>
+        <div class="panel">
+          <h3>Open offers (sorted by distance) <span class="pill" id="openOffersCount">0</span></h3>
+          <div id="openOffers"></div>
+        </div>
+      </div>
+
+      <div class="dash-grid" style="margin-top:6px">
+        <div class="panel" style="grid-column:1/-1">
+          <h3>Offers you've claimed <span class="pill" id="myClaimsCount">0</span></h3>
+          <div id="myClaims"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== About ===== -->
+    <section id="about" class="view">
+      <div class="container">
+        <div class="about-grid">
+          <div>
+            <span class="eyebrow">Our mission</span>
+            <h2 style="text-align:left;font-size:36px;margin:6px 0 14px">Bridge the gap between surplus and scarcity.</h2>
+            <p style="color:var(--muted)">
+              Every day, restaurants pack up perfectly good food at closing time. Caterers finish events
+              with trays of untouched meals. Households cook more than they can eat. At the same time,
+              shelters and community kitchens are stretched thin.
+            </p>
+            <p style="color:var(--muted)">
+              MealBridge sits in the middle as a free third-party connector — donors don't need to
+              find an NGO, and NGOs don't need to chase donations. The platform does the matching by
+              location, in real time.
+            </p>
+            <ul class="values-list">
+              <li>Zero fees for donors and NGOs — forever.</li>
+              <li>Verified NGOs only, so donors know food reaches the right hands.</li>
+              <li>Live distance matching means food gets there before it spoils.</li>
+              <li>Built as a not-for-profit; data is never sold.</li>
+            </ul>
+          </div>
+          <div class="visual">🤝</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== FAQ ===== -->
+    <section id="faq" class="view">
+      <div class="container tight" style="max-width:820px">
+        <span class="eyebrow" style="display:block;text-align:center;margin:0 auto 14px;width:fit-content">FAQ</span>
+        <h2 style="text-align:center;font-size:36px;margin:0 0 12px">Frequently asked questions</h2>
+        <p style="text-align:center;color:var(--muted);margin:0 0 36px">Everything donors and NGOs usually ask before signing up.</p>
+        <div class="faq-list" id="faqList"><!-- populated by JS --></div>
+      </div>
+    </section>
+  </main>
+
+  <div class="toast-host" id="toasts"></div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="app.js"></script>
+</body>
+</html>
