@@ -1,7 +1,5 @@
 [deploy]
-# Install backend dependencies, then start Node.js (background) + Caddy (foreground).
-# Node listens on port 4000; Caddy listens on $PORT (Railway injects this, defaults to 80).
-# Caddy proxies /api/* → localhost:4000 and serves static files for everything else.
-startCommand = "cd server && npm install --omit=dev --no-audit --no-fund && node src/index.js & cd .. && caddy run --config Caddyfile --adapter caddyfile"
-healthcheckPath = "/health"
+# Express serves both the API and static frontend — no Caddy needed.
+startCommand = "node server/src/index.js"
+healthcheckPath = "/api/health"
 healthcheckTimeout = 30
