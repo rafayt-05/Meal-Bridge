@@ -1,0 +1,24 @@
+:{$PORT:80} {
+	# Start the Node.js backend on port 4000 before handling requests.
+	# Caddy's `exec` global option isn't available in the free tier, so we
+	# rely on the start command in railway.toml to launch Node alongside Caddy.
+	# See railway.toml for the combined start command.
+
+	# ── Health check (Caddy-level, responds immediately) ──────────────────
+	respond /health 200
+
+	# ── API — proxy everything under /api/* to the Node backend ───────────
+	handle /api/* {
+		reverse_proxy localhost:4000
+	}
+
+	# ── Frontend — serve static files from the repo root ──────────────────
+	handle {
+		root * /app
+		try_files {path} /index.html
+		file_server
+	}
+
+	# Compress responses
+	encode gzip
+}
