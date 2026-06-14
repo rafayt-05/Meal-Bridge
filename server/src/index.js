@@ -23,12 +23,11 @@ app.use(bodyParser.json({ limit: '5mb' }));
 app.use('/api/auth', authRoutes);
 app.use('/api/ngos', ngoRoutes);
 app.use('/api/offers', offersRoutes);
+app.get('/api/health', (req, res) => res.json({ ok: true, time: Date.now() }));
 
 // Serve the static frontend so you can run everything with a single command.
 const FRONTEND_DIR = path.join(__dirname, '..', '..');
 app.use(express.static(FRONTEND_DIR, { index: 'index.html' }));
-
-app.get('/api/health', (req, res) => res.json({ ok: true, time: Date.now() }));
 
 const PORT = process.env.PORT || 4000;
 
