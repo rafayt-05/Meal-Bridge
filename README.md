@@ -40,7 +40,7 @@ npm --version
 #### 2. Install backend dependencies
 
 ```powershell
-cd "AI-food-trackor-main/server"
+cd "Meal-Bridge-main/server"
 npm install
 ```
 
